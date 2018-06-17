@@ -8,10 +8,6 @@ open class GolGrid(private val rows: Int,
 
     private var grid: IntMatrix = mutableListOf()
 
-    val currentState: List<Int>
-        get() = grid.flatten()
-
-
     init {
         val fillState = when (initialState.size == rows * cols) {
             true -> initialState
