@@ -2,7 +2,7 @@ import java.util.*
 
 typealias IntMatrix = MutableList<MutableList<Int>>
 
-open class GolGrid private constructor(
+class GolGrid private constructor(
                    private val rows: Int,
                    private val cols: Int,
                    initialState: List<Int>) {
