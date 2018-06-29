@@ -119,4 +119,14 @@ class GameOfLifeTests {
                 .let { state -> Assert.assertEquals(0, state[1][1]) }
 
     }
+
+    @Test
+    fun `should work on not square grids`() {
+        GolGrid(3, 4, listOf(
+                0, 0, 0, 1,
+                0, 0, 0, 1,
+                0, 0, 0, 1))
+                .run { nextGeneration() }
+                .let { state -> Assert.assertEquals(1, state[1][2]) }
+    }
 }
