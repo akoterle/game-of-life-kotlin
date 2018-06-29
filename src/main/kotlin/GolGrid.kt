@@ -14,16 +14,16 @@ open class GolGrid private constructor(
     }
 
     fun nextGeneration(): List<List<Int>> {
-        (0 until (rows * cols))
-                .map { Pair(it / cols % rows, it % cols) }
-                .map { applyRules(it.first, it.second) }
-                .run(::fillGridUp)
+        (0 until rows).flatMap { row ->
+            (0 until cols).map { col ->
+                Triple(row,col,applyRules(row,col))
+            }
+        }.forEach{ (row,col,value) -> grid[row][col] = value}
 
         return grid.map(MutableList<Int>::toList)
 
     }
-
-
+    
     private fun applyRules(row: Int, col: Int): Int {
         val numOfAliveNeighbors = neighbours(row, col)
                 .map { grid[it.first][it.second] }
@@ -47,7 +47,6 @@ open class GolGrid private constructor(
                 val col = index % cols
                 grid[row][col] = i
             }
-
 
     private fun neighbours(x: Int, y: Int): List<Pair<Int, Int>> {
         return ((x - 1)..(x + 1)).filter { it in 0..(rows - 1) }.flatMap { px ->
