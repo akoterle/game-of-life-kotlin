@@ -7,7 +7,7 @@ open class GolGrid private constructor(
                    private val cols: Int,
                    initialState: List<Int>) {
 
-    private var grid: IntMatrix = MutableList(rows,{ MutableList(cols){ 0 }})
+    private val grid: IntMatrix = MutableList(rows,{ MutableList(cols){ 0 }})
 
     init {
         initialState.mapIndexed { index, aliveValue ->
