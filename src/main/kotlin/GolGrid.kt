@@ -29,19 +29,15 @@ open class GolGrid private constructor(
                 .map { grid[it.first][it.second] }
                 .partition { state -> state == 1 }
 
-        val alive = grid[row][col] == 1
+        val iaAlive = grid[row][col] == 1
 
-        return when (alive) {
-            true -> when (aliveNeighbors.count()) {
-                0, 1 -> 0
-                2, 3 -> 1
-                else -> 0
-            }
-            else -> when (aliveNeighbors.count()) {
-                3 -> 1
-                else -> 0
-            }
-        }
+        return rules(iaAlive,aliveNeighbors.count())
+    }
+
+    private fun rules(alive:Boolean,numOfAliveNeighbors:Int) = when (numOfAliveNeighbors) {
+        2 -> if(alive) 1 else 0
+        3 -> 1
+        else -> 0
     }
 
     private fun fillGridUp(state: List<Int>) =
