@@ -22,7 +22,7 @@ class GolGrid private constructor(
             }
         }.forEach{ (row,col,value) -> grid[row][col] = value}
 
-        return grid.map(MutableList<Int>::toList)
+        return grid.map(List<Int>::toList)
 
     }
     
