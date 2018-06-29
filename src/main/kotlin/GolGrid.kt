@@ -31,7 +31,7 @@ open class GolGrid(private val rows: Int,
 
 
     private fun applyRules(row: Int, col: Int): Int {
-        val (aliveNeighbors, _) = neighbors(row, col)
+        val (aliveNeighbors, _) = neighbours(row, col)
                 .map { grid[it.first][it.second] }
                 .partition { state -> state == 1 }
 
@@ -63,21 +63,12 @@ open class GolGrid(private val rows: Int,
             }
 
 
-    private fun neighbors(x: Int, y: Int): List<Pair<Int, Int>> {
-
-        val neighbors: MutableList<Pair<Int, Int>> = mutableListOf()
-
-        if (y + 1 < cols) neighbors.add(Pair(x, y + 1))
-        if (y > 0) neighbors.add(Pair(x, y - 1))
-        if (x + 1 < rows) neighbors.add(Pair(x + 1, y))
-        if (x > 0) neighbors.add(Pair(x - 1, y))
-        if ((x + 1 < rows) and (y + 1 < cols)) neighbors.add(Pair(x + 1, y + 1))
-        if ((x + 1 < rows) and (y > 0)) neighbors.add(Pair(x + 1, y - 1))
-        if ((x > 0) and (y + 1 < cols)) neighbors.add(Pair(x - 1, y + 1))
-        if ((x > 0) and (y > 0)) neighbors.add(Pair(x - 1, y - 1))
-
-        return neighbors
-
+    private fun neighbours(x: Int, y: Int): List<Pair<Int, Int>> {
+        return ((x - 1)..(x + 1)).filter { it in 0..(rows - 1) }.flatMap { px ->
+            ((y - 1)..(y + 1)).filter { it in 0..(cols - 1) } .map { py ->
+                (px to py)
+            }
+        }.filter { it.first != x || it.second != y }
     }
 
 }
