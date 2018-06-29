@@ -6,7 +6,7 @@ open class GolGrid(private val rows: Int,
                    private val cols: Int,
                    initialState: List<Int> = listOf()) {
 
-    private var grid: IntMatrix = mutableListOf()
+    private var grid: IntMatrix = MutableList(rows,{ MutableList(cols){ 0 }})
 
     init {
         val fillState = when (initialState.size == rows * cols) {
@@ -15,7 +15,6 @@ open class GolGrid(private val rows: Int,
                 (1..rows * cols).map { nextInt(2) }
             }
         }
-        createGrid()
         fillGridUp(fillState)
     }
 
@@ -49,11 +48,6 @@ open class GolGrid(private val rows: Int,
             }
         }
     }
-
-    private fun createGrid() = (1..rows * cols)
-            .map { Pair(it / cols % rows, it % cols) }
-            .groupBy({ it.first }, { it.second })
-            .forEach { grid.add(it.key, it.value.toMutableList()) }
 
     private fun fillGridUp(state: List<Int>) =
             state.mapIndexed { index, i ->
