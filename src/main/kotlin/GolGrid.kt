@@ -63,7 +63,7 @@ class GolGrid private constructor(
                     GolGrid(rows,cols)
 
         private fun randomInitialState(rows: Int,cols: Int) = with(Random()) {
-            (1..(rows * cols)).map { if (nextBoolean()) 1 else 0 }
+            (1..(rows * cols)).map { nextInt(2) }
         }
     }
 
