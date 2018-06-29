@@ -25,13 +25,14 @@ open class GolGrid private constructor(
 
 
     private fun applyRules(row: Int, col: Int): Int {
-        val (aliveNeighbors, _) = neighbours(row, col)
+        val numOfAliveNeighbors = neighbours(row, col)
                 .map { grid[it.first][it.second] }
-                .partition { state -> state == 1 }
+                .filter { it == 1 }
+                .count()
 
-        val iaAlive = grid[row][col] == 1
+        val isAlive = grid[row][col] == 1
 
-        return rules(iaAlive,aliveNeighbors.count())
+        return rules(isAlive,numOfAliveNeighbors)
     }
 
     private fun rules(alive:Boolean,numOfAliveNeighbors:Int) = when (numOfAliveNeighbors) {
