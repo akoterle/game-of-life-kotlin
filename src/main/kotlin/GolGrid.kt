@@ -2,20 +2,15 @@ import java.util.*
 
 typealias IntMatrix = MutableList<MutableList<Int>>
 
-open class GolGrid(private val rows: Int,
+open class GolGrid private constructor(
+                   private val rows: Int,
                    private val cols: Int,
-                   initialState: List<Int> = listOf()) {
+                   initialState: List<Int>) {
 
     private var grid: IntMatrix = MutableList(rows,{ MutableList(cols){ 0 }})
 
     init {
-        val fillState = when (initialState.size == rows * cols) {
-            true -> initialState
-            else -> with(Random()) {
-                (1..rows * cols).map { nextInt(2) }
-            }
-        }
-        fillGridUp(fillState)
+        fillGridUp(initialState)
     }
 
     fun nextGeneration(): List<List<Int>> {
@@ -63,6 +58,20 @@ open class GolGrid(private val rows: Int,
                 (px to py)
             }
         }.filter { it.first != x || it.second != y }
+    }
+
+    companion object {
+
+        operator fun invoke(rows: Int,cols: Int) = GolGrid(rows,cols,randomInitialState(rows,cols))
+        operator fun invoke(rows: Int,cols: Int,initialState: List<Int>) =
+                if (initialState.count() == (rows*cols))
+                    GolGrid(rows,cols,initialState)
+                else
+                    GolGrid(rows,cols)
+
+        private fun randomInitialState(rows: Int,cols: Int) = with(Random()) {
+            (1..(rows * cols)).map { if (nextBoolean()) 1 else 0 }
+        }
     }
 
 }
