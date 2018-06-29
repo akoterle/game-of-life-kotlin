@@ -29,10 +29,10 @@ class GolGrid private constructor(
     private fun applyRules(row: Int, col: Int): Int {
         val numOfAliveNeighbors = neighbours(row, col)
                 .map { grid[it.first][it.second] }
-                .filter { it == 1 }
+                .filter { it == ALIVE }
                 .count()
 
-        val isAlive = grid[row][col] == 1
+        val isAlive = grid[row][col] == ALIVE
 
         return rules(isAlive,numOfAliveNeighbors)
     }
