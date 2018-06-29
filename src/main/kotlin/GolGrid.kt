@@ -10,7 +10,11 @@ open class GolGrid private constructor(
     private var grid: IntMatrix = MutableList(rows,{ MutableList(cols){ 0 }})
 
     init {
-        fillGridUp(initialState)
+        initialState.mapIndexed { index, aliveValue ->
+            val row = index / cols % rows
+            val col = index % cols
+            grid[row][col] = aliveValue
+        }
     }
 
     fun nextGeneration(): List<List<Int>> {
@@ -40,13 +44,6 @@ open class GolGrid private constructor(
         3 -> 1
         else -> 0
     }
-
-    private fun fillGridUp(state: List<Int>) =
-            state.mapIndexed { index, i ->
-                val row = index / cols % rows
-                val col = index % cols
-                grid[row][col] = i
-            }
 
     private fun neighbours(x: Int, y: Int): List<Pair<Int, Int>> {
         return ((x - 1)..(x + 1)).filter { it in 0..(rows - 1) }.flatMap { px ->
