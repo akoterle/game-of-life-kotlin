@@ -7,7 +7,7 @@ open class GolGrid private constructor(
                    private val cols: Int,
                    initialState: List<Int>) {
 
-    private val grid: IntMatrix = MutableList(rows,{ MutableList(cols){ 0 }})
+    private val grid: IntMatrix = MutableList(rows,{ MutableList(cols){ DEAD }})
 
     init {
         initialState.mapIndexed { index, aliveValue ->
@@ -40,9 +40,9 @@ open class GolGrid private constructor(
     }
 
     private fun rules(alive:Boolean,numOfAliveNeighbors:Int) = when (numOfAliveNeighbors) {
-        2 -> if(alive) 1 else 0
-        3 -> 1
-        else -> 0
+        2 -> if(alive) ALIVE else DEAD
+        3 -> ALIVE
+        else -> DEAD
     }
 
     private fun neighbours(x: Int, y: Int): List<Pair<Int, Int>> {
@@ -54,6 +54,8 @@ open class GolGrid private constructor(
     }
 
     companion object {
+        const val ALIVE = 1
+        const val DEAD = 0
 
         operator fun invoke(rows: Int,cols: Int) = GolGrid(rows,cols,randomInitialState(rows,cols))
         operator fun invoke(rows: Int,cols: Int,initialState: List<Int>) =
