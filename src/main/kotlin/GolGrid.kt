@@ -1,13 +1,11 @@
 import java.util.*
 
-typealias IntMatrix = MutableList<MutableList<Int>>
-
 class GolGrid private constructor(
                    private val rows: Int,
                    private val cols: Int,
                    initialState: List<Int>) {
 
-    private val grid: IntMatrix = MutableList(rows,{ MutableList(cols){ DEAD }})
+    private val grid = MutableList(rows,{ MutableList(cols){ DEAD }})
 
     init {
         initialState.mapIndexed { index, aliveValue ->
