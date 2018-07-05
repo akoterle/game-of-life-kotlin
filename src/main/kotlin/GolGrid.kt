@@ -1,83 +1,70 @@
 import java.util.*
 
-typealias IntMatrix = MutableList<MutableList<Int>>
-
-open class GolGrid(private val rows: Int,
+class GolGrid private constructor(
+                   private val rows: Int,
                    private val cols: Int,
-                   initialState: List<Int> = listOf()) {
+                   initialState: List<Int>) {
 
-    private var grid: IntMatrix = mutableListOf()
+    private val grid = MutableList(rows,{ MutableList(cols){ DEAD }})
 
     init {
-        val fillState = when (initialState.size == rows * cols) {
-            true -> initialState
-            else -> with(Random()) {
-                (1..rows * cols).map { nextInt(2) }
-            }
+        initialState.mapIndexed { index, aliveValue ->
+            val row = index / cols % rows
+            val col = index % cols
+            grid[row][col] = aliveValue
         }
-        createGrid()
-        fillGridUp(fillState)
     }
 
     fun nextGeneration(): List<List<Int>> {
-        (0 until (rows * cols))
-                .map { Pair(it / cols % rows, it % cols) }
-                .map { applyRules(it.first, it.second) }
-                .run(::fillGridUp)
+        (0 until rows).flatMap { row ->
+            (0 until cols).map { col ->
+                Triple(row,col,applyRules(row,col))
+            }
+        }.forEach{ (row,col,value) -> grid[row][col] = value}
 
-        return grid.map(MutableList<Int>::toList)
+        return grid.map(List<Int>::toList)
 
     }
-
-
+    
     private fun applyRules(row: Int, col: Int): Int {
-        val (aliveNeighbors, _) = neighbors(row, col)
+        val numOfAliveNeighbors = neighbours(row, col)
                 .map { grid[it.first][it.second] }
-                .partition { state -> state == 1 }
+                .filter { it == ALIVE }
+                .count()
 
-        val alive = grid[row][col] == 1
+        val isAlive = grid[row][col] == ALIVE
 
-        return when (alive) {
-            true -> when (aliveNeighbors.count()) {
-                0, 1 -> 0
-                2, 3 -> 1
-                else -> 0
-            }
-            else -> when (aliveNeighbors.count()) {
-                3 -> 1
-                else -> 0
-            }
-        }
+        return rules(isAlive,numOfAliveNeighbors)
     }
 
-    private fun createGrid() = (1..rows * cols)
-            .map { Pair(it / cols % rows, it % cols) }
-            .groupBy({ it.first }, { it.second })
-            .forEach { grid.add(it.key, it.value.toMutableList()) }
+    private fun rules(alive:Boolean,numOfAliveNeighbors:Int) = when (numOfAliveNeighbors) {
+        2 -> if(alive) ALIVE else DEAD
+        3 -> ALIVE
+        else -> DEAD
+    }
 
-    private fun fillGridUp(state: List<Int>) =
-            state.mapIndexed { index, i ->
-                val row = index / cols % rows
-                val col = index % cols
-                grid[row][col] = i
+    private fun neighbours(x: Int, y: Int): List<Pair<Int, Int>> {
+        return ((x - 1)..(x + 1)).filter { it in 0..(rows - 1) }.flatMap { px ->
+            ((y - 1)..(y + 1)).filter { it in 0..(cols - 1) } .map { py ->
+                (px to py)
             }
+        }.filter { it.first != x || it.second != y }
+    }
 
+    companion object {
+        const val ALIVE = 1
+        const val DEAD = 0
 
-    private fun neighbors(x: Int, y: Int): List<Pair<Int, Int>> {
+        operator fun invoke(rows: Int,cols: Int) = GolGrid(rows,cols,randomInitialState(rows,cols))
+        operator fun invoke(rows: Int,cols: Int,initialState: List<Int>) =
+                if (initialState.count() == (rows*cols))
+                    GolGrid(rows,cols,initialState)
+                else
+                    GolGrid(rows,cols)
 
-        val neighbors: MutableList<Pair<Int, Int>> = mutableListOf()
-
-        if (y + 1 < cols) neighbors.add(Pair(x, y + 1))
-        if (y > 0) neighbors.add(Pair(x, y - 1))
-        if (x + 1 < rows) neighbors.add(Pair(x + 1, y))
-        if (x > 0) neighbors.add(Pair(x - 1, y))
-        if ((x + 1 < rows) and (y + 1 < cols)) neighbors.add(Pair(x + 1, y + 1))
-        if ((x + 1 < rows) and (y > 0)) neighbors.add(Pair(x + 1, y - 1))
-        if ((x > 0) and (y + 1 < cols)) neighbors.add(Pair(x - 1, y + 1))
-        if ((x > 0) and (y > 0)) neighbors.add(Pair(x - 1, y - 1))
-
-        return neighbors
-
+        private fun randomInitialState(rows: Int,cols: Int) = with(Random()) {
+            (1..(rows * cols)).map { nextInt(2) }
+        }
     }
 
 }
